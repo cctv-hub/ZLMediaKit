@@ -1,6 +1,6 @@
 version: "3"
 services:
-  zlmedia-server:
+  zlm-server-12345:
     image: zlmediakit/zlmediakit:master
     ports:
       - "1935:1935"
@@ -17,4 +17,31 @@ services:
     #   - "sleep infinity"
     restart: always
     volumes:
-      - .:/app
+      - ./conf:/opt/media/conf
+    networks:
+      - bridge-net
+
+  zlm-server-67890:
+    image: zlmediakit/zlmediakit:master
+    ports:
+      - "1934:1935"
+      - "8553:554"
+      - "8079:80"
+      - "8442:443"
+      - "9999:10000"
+      - "7999:8000/udp"
+      - "8999:9000/udp"
+      - "9999:10000/udp"
+    # command:
+    #   - bash
+    #   - -c 
+    #   - "sleep infinity"
+    restart: always
+    volumes:
+      - ./conf:/opt/media/conf
+    networks:
+      - bridge-net
+networks:
+  bridge-net:
+    external:
+      name: cctv-hub
