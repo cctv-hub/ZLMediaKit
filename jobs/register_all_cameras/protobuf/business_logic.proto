@@ -1,0 +1,116 @@
+syntax = "proto3";
+package bizLogic;
+
+option go_package = "./pkg/api/bizLogic";
+
+// The bizLogic service definition.
+service bizLogic {
+  // create a camera svc 
+  rpc RegisterCamera(RegisterCameraRequest) returns (RegisterCameraResponse);
+  rpc RegisterAppByCameraUid(RegisterAppByCameraUidRequest) returns (RegisterAppByCameraUidResponse);
+
+  // get a camera svc
+  rpc GetCameraByUid(GetCameraByUidRequest) returns (GetCameraResponse);
+  rpc GetCameraByGroupAndName(GetCameraByGroupAndNameRequest) returns (GetCameraResponse);
+
+  // update a camera svc
+  rpc UpdateCameraMetadata(UpdateCameraMetadataRequest) returns (UpdateCameraMetadataResponse);
+  rpc UpdateCameraApp(UpdateCameraAppRequest) returns (UpdateCameraAppResponse);
+
+  // Delete a camera svc
+  rpc DeleteCameraByUid(DeleteCameraByUidRequest) returns (DeleteCameraByUidResponse);
+  rpc DeleteAppByCameraUid(DeleteAppByCameraUidRequest) returns (DeleteAppByCameraUidResponse);
+
+}
+//RegisterCamera
+message RegisterCameraRequest {
+  string group_id=1;
+  string name=2;
+  string camera_info=3;
+  string raw_input_url=4;
+  repeated MediaChannelInputData media_channel_config=5;
+}
+message RegisterCameraResponse {
+  string camera_uid=1;
+  repeated MediaChannelOutputData media_channel_data=2;
+  bool success=3;
+}
+
+//RegisterAppByCameraUid
+message MediaChannelInputData {
+  int32 app_type_id=1;
+  string media_channel_info=2;
+  bool is_recording=3;
+}
+message MediaChannelOutputData {
+  string app_uid=1;
+  int32 media_channel_id=2;
+  string media_channel_info=3;
+  int32 app_type_id=4;
+  bool is_recording=5;
+}
+message RegisterAppByCameraUidRequest {
+  string camera_uid=1;
+  string group_id=2;
+  MediaChannelInputData media_channel_config=3;
+}
+message RegisterAppByCameraUidResponse {
+  MediaChannelOutputData media_channel_data=1;
+  bool success=2;
+}
+
+//GetCameraByUid
+message GetCameraByUidRequest {
+  string camera_uid=1;
+}
+message GetCameraResponse {
+  string camera_uid=1;
+  string group_id=2;
+  string name=3;
+  string camera_info=4;
+  string raw_input_url=5;
+  repeated MediaChannelOutputData media_channel_data=6;
+}
+
+//GetCameraByGroupAndName
+message GetCameraByGroupAndNameRequest {
+  string group_id =1;
+  string name=2;
+}
+
+//UpdateCameraMetadata
+message UpdateCameraMetadataRequest {
+  string camera_uid=1;
+  string name=2;
+}
+message UpdateCameraMetadataResponse {
+  bool success=1;
+}
+
+//UpdateCameraApp
+message UpdateCameraAppRequest {
+  string camera_uid=1;
+  int32 app_type_id=2;
+  bool is_recording=3;
+}
+message UpdateCameraAppResponse {
+  string app_uid=1;
+  bool success=2;
+}
+
+//DeleteCameraByUid
+message DeleteCameraByUidRequest {
+  string camera_uid=1;
+}
+message DeleteCameraByUidResponse {
+  bool success=1;
+}
+
+//DeleteAppByCameraUid
+message DeleteAppByCameraUidRequest {
+  string camera_uid=1;
+  int32 app_type_id=2;
+}
+message DeleteAppByCameraUidResponse {
+  bool success=1;
+}

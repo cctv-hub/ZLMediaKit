@@ -1,0 +1,26 @@
+version: "3"
+services:
+  zlm-server-12345:
+    image: zlmediakit/zlmediakit:master
+    # ports:
+    #   - "1935:1935"
+    #   - "8554:554"
+    #   - "8080:80"
+    #   - "8443:443"
+    #   - "10000:10000"
+    #   - "8000:8000/udp"
+    #   - "9000:9000/udp"
+    #   - "10000:10000/udp"
+    restart: always
+    volumes:
+      - ./conf:/opt/media/conf
+
+  job_register_all_cameras:
+    build:
+      context: ./jobs/register_all_cameras
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - ./conf/config.ini:/app/conf/config.ini:ro
+      - ./jobs/register_all_cameras/conf/config.yaml:/app/conf/config.yaml:ro
+      # - ./jobs/register_all_cameras:/app

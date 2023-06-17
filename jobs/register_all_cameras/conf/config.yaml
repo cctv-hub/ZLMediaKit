@@ -1,0 +1,6 @@
+zlm-cms:
+  host: "zlm-cms"
+  port: 80
+zlm-load-balancer:
+  host: "zlm-load-balancer"
+  port: 50052
