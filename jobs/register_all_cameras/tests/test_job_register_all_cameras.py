@@ -129,7 +129,6 @@ def test_check_cam_exist(requests_mock):
     zlm_secret = zlm_server_cfg['api']['secret']
     zlm_vhost = "__defaultVhost__" # this is the default value if general.enableVhost is false
     # cam exist, return True
-    #http://zlm-serveryour_server_id/index/api/getMediaList?secret=035c73f7-bb6b-4889-a715-d9eb2d1925cc&vhost=__defaultVhost__&app=streaming&stream=cameraUid1
     requests_mock.get("http://zlm-server-{APPLICATION_HOST}/index/api/getMediaList?secret={SECRET}&vhost={VHOST}&app={APP}&stream={STREAM}".format(
         APPLICATION_HOST=host,
         SECRET=zlm_secret,
@@ -242,9 +241,8 @@ def test_register_camera(requests_mock):
     zlm_secret = zlm_server_cfg['api']['secret']
     zlm_vhost = "__defaultVhost__" # this is the default value if general.enableVhost is false
 
-# http://zlm-server-your_server_id/index/api/addStreamProxy?secret=035c73f7-bb6b-4889-a715-d9eb2d1925cc&schema=rtsp&vhost=__defaultVhost__&app=streaming&stream=cameraUid1&dst_url=rtsp%3A%2F%2Fabc.com&enable_hls=1&enable_mp4=True&enable_rtsp=1
     # register success
-    requests_mock.get("http://zlm-server-{APPLICATION_HOST}/index/api/addStreamProxy?secret={SECRET}&schema={SCHEMA}&vhost={VHOST}&app={APP}&stream={STREAM}&dst_url={URL}&enable_hls=1&enable_mp4=1&enable_rtsp=1".format(
+    requests_mock.get("http://zlm-server-{APPLICATION_HOST}/index/api/addStreamProxy?secret={SECRET}&schema={SCHEMA}&vhost={VHOST}&app={APP}&stream={STREAM}&durl={URL}&enable_hls=1&enable_mp4=1&enable_rtsp=1".format(
         APPLICATION_HOST=host,
         SECRET=zlm_secret,
         SCHEMA="rtsp",
@@ -264,7 +262,7 @@ def test_register_camera(requests_mock):
     register_all_cameras.register_camera(app_type,camera_uid,raw_input_url,is_recording=True)
 
     # register failed, raise exception
-    requests_mock.get("http://zlm-server-{APPLICATION_HOST}/index/api/addStreamProxy?secret={SECRET}&vhost={VHOST}&app={APP}&stream={STREAM}&dst_url={URL}&enable_hls=1&enable_mp4=1&enable_rtsp=1".format(
+    requests_mock.get("http://zlm-server-{APPLICATION_HOST}/index/api/addStreamProxy?secret={SECRET}&vhost={VHOST}&app={APP}&stream={STREAM}&url={URL}&enable_hls=1&enable_mp4=1&enable_rtsp=1".format(
         APPLICATION_HOST=host,
         SECRET=zlm_secret,
         VHOST=zlm_vhost,
@@ -284,7 +282,7 @@ def test_register_camera(requests_mock):
         register_all_cameras.register_camera(app_type,camera_uid,raw_input_url,is_recording=True)
     
     # endpoint cannot be reached, raise exception
-    requests_mock.get("http://zlm-server-{APPLICATION_HOST}/index/api/addStreamProxy?secret={SECRET}&vhost={VHOST}&app={APP}&stream={STREAM}&dst_url={URL}&enable_hls=1&enable_mp4=1&enable_rtsp=1".format(
+    requests_mock.get("http://zlm-server-{APPLICATION_HOST}/index/api/addStreamProxy?secret={SECRET}&vhost={VHOST}&app={APP}&stream={STREAM}&url={URL}&enable_hls=1&enable_mp4=1&enable_rtsp=1".format(
         APPLICATION_HOST=host,
         SECRET=zlm_secret,
         VHOST=zlm_vhost,

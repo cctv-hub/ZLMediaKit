@@ -5,7 +5,12 @@ import os
 from loguru import logger
 from grpc_gen_code.business_logic_pb2_grpc import bizLogicStub
 from grpc_gen_code.cctv_crud_pb2_grpc import CctvCrudStub
-from grpc_gen_code.cctv_crud_pb2 import ListApplicationByHostRequest
+from grpc_gen_code.cctv_crud_pb2 import (
+    ListApplicationByHostRequest,
+    MediaChannelsRequest,
+    GetCameraByUidRequest
+)
+import time
 import grpc
 
 DEPLOY_MODE = os.environ.get('DEPLOY_MODE', 'docker')
@@ -40,13 +45,15 @@ def get_cameras():
     ).applications
     for app in list_of_app:
         if app.is_enabled:
-            list_of_mc = cctv_crud_stub.ListMediaChannelsByAppUid(
-                appUid=app.app_uid
+            list_of_mc = cctv_crud_stub.ListMediaChannelsByAppUid(MediaChannelsRequest(
+                app_uid=app.app_uid
+                )
             ).media_channels
             for mc in list_of_mc:
                 if mc.is_enabled:
-                    cam_metadata = cctv_crud_stub.GetCameraByUid(
-                        cameraUid=mc.camera_uid
+                    cam_metadata = cctv_crud_stub.GetCameraByUid(GetCameraByUidRequest(
+                        camera_uid=mc.camera_uid
+                    )
                     )
                     full_list_of_cameras.append(
                         {
@@ -74,7 +81,7 @@ def check_cam_exist(app_type, camera_uid):
         response = response.json()
         if response["code"] == 0:
             logger.info(f"getMediaList for camera {camera_uid} on app {app_type} successfully")
-            if len(response["data"]) == 0:
+            if len(response.get("data",[])) == 0:
                 return False
             else:
                 return True
@@ -90,7 +97,7 @@ def register_camera(app_type, camera_uid, raw_input_url,is_recording):
                                     "vhost": zlm_vhost,
                                     "app": app_type,
                                     "stream": camera_uid,
-                                    "dst_url": raw_input_url,
+                                    "url": raw_input_url,
                                     "enable_hls": 1,
                                     "enable_mp4": int(is_recording),
                                     "enable_rtsp": 1
@@ -123,6 +130,8 @@ def main():
             logger.error(f"Error when registering camera {cam['camera_uid']} on app {cam['app_uid']}: {e}")
             # if error, put back to the list
             full_list_of_cameras.insert(0, cam)
+        # wait for 5 seconds
+        time.sleep(5)
         
 if __name__ == "__main__":
     main()
