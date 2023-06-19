@@ -5,7 +5,8 @@ from grpc_gen_code.cctv_crud_pb2 import (
     ApplicationFullData,
     ListMediaChannelsResponse,
     MediaChannelsRequest,
-    CameraFullData
+    CameraFullData,
+    AppTypeFullData
 )
 import requests
 import pytest
@@ -94,6 +95,22 @@ def test_get_cameras(mocker):
                         raw_input_url="rtsp://cam_url/"
                     )
                 )
+    mocker.patch('main.cctv_crud_stub.GetAppTypeById',
+                    side_effect=[
+                        AppTypeFullData(
+                        app_type_id=1,
+                        app_type_info="{\"detail\": \"shouldNotAffectOutput\"}",
+                        is_enabled=True,
+                        name="apptype1"
+                        ),
+                        AppTypeFullData(
+                        app_type_id=2,
+                        app_type_info="{\"detail\": \"shouldNotAffectOutput\"}",
+                        is_enabled=True,
+                        name="apptype2"
+                        )
+                    ]
+                )
 
     result = register_all_cameras.get_cameras()
     assert len(result) == 2
@@ -107,7 +124,7 @@ def test_get_cameras(mocker):
             "camera_uid": "cameraUid1",
             "is_recording": True,
             "raw_input_url": "rtsp://cam_url/",
-            "app_type_id": 1
+            "app_type": "apptype1"
         }
     assert result[1] == {
             "app_uid": "appUid2",
@@ -119,7 +136,7 @@ def test_get_cameras(mocker):
             "camera_uid": "cameraUid2",
             "is_recording": False,
             "raw_input_url": "rtsp://cam_url/",
-            "app_type_id": 2
+            "app_type": "apptype2"
         }
 
 def test_check_cam_exist(requests_mock):
@@ -242,7 +259,7 @@ def test_register_camera(requests_mock):
     zlm_vhost = "__defaultVhost__" # this is the default value if general.enableVhost is false
 
     # register success
-    requests_mock.get("http://zlm-server-{APPLICATION_HOST}/index/api/addStreamProxy?secret={SECRET}&schema={SCHEMA}&vhost={VHOST}&app={APP}&stream={STREAM}&durl={URL}&enable_hls=1&enable_mp4=1&enable_rtsp=1".format(
+    requests_mock.get("http://zlm-server-{APPLICATION_HOST}/index/api/addStreamProxy?secret={SECRET}&schema={SCHEMA}&vhost={VHOST}&app={APP}&stream={STREAM}&url={URL}&enable_hls=1&enable_mp4=1&enable_rtsp=1".format(
         APPLICATION_HOST=host,
         SECRET=zlm_secret,
         SCHEMA="rtsp",

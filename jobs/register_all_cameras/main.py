@@ -8,7 +8,8 @@ from grpc_gen_code.cctv_crud_pb2_grpc import CctvCrudStub
 from grpc_gen_code.cctv_crud_pb2 import (
     ListApplicationByHostRequest,
     MediaChannelsRequest,
-    GetCameraByUidRequest
+    GetCameraByUidRequest,
+    GetAppTypeByIdRequest
 )
 import time
 import grpc
@@ -55,12 +56,16 @@ def get_cameras():
                         camera_uid=mc.camera_uid
                     )
                     )
+                    app_type = cctv_crud_stub.GetAppTypeById(GetAppTypeByIdRequest(
+                        app_type_id=app.app_type_id
+                    )
+                    ).name
                     full_list_of_cameras.append(
                         {
                             "app_uid": app.app_uid,
                             "group_id": app.group_id,
                             "application_info": app.application_info,
-                            "app_type_id": app.app_type_id,
+                            "app_type": app_type,
                             "media_channel_id": mc.media_channel_id,
                             "media_channel_info": mc.media_channel_info,
                             "camera_uid": mc.camera_uid,
@@ -120,12 +125,12 @@ def main():
         cam = full_list_of_cameras.pop()
         try:
             # check if cam exist on zlm
-            if check_cam_exist(cam["app_uid"], cam["camera_uid"]):
+            if check_cam_exist(cam["app_type"], cam["camera_uid"]):
                 # if exist, do nothing
                 logger.info(f"Camera {cam['camera_uid']} on app {cam['app_uid']} already exist on zlm")
             else:
                 # if not exist, register
-                register_camera(cam["app_uid"], cam["camera_uid"], cam["raw_input_url"], cam["is_recording"])
+                register_camera(cam["app_type"], cam["camera_uid"], cam["raw_input_url"], cam["is_recording"])
         except Exception as e:
             logger.error(f"Error when registering camera {cam['camera_uid']} on app {cam['app_uid']}: {e}")
             # if error, put back to the list
