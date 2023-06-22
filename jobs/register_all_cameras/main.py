@@ -15,6 +15,7 @@ import time
 import grpc
 
 DEPLOY_MODE = os.environ.get('DEPLOY_MODE', 'docker')
+COOLDOWN_SECOND = int(os.environ.get('COOLDOWN_SECOND', "5"))
 with open("conf/config.yaml", "r") as ymlfile:
     cfg = yaml.safe_load(ymlfile)
 
@@ -120,23 +121,22 @@ def register_camera(app_type, camera_uid, raw_input_url,is_recording):
 
 def main():
     # get cam list from db
-    full_list_of_cameras = get_cameras()
-    while len(full_list_of_cameras) > 0:
-        cam = full_list_of_cameras.pop()
-        try:
-            # check if cam exist on zlm
-            if check_cam_exist(cam["app_type"], cam["camera_uid"]):
-                # if exist, do nothing
-                logger.info(f"Camera {cam['camera_uid']} on app {cam['app_uid']} already exist on zlm")
-            else:
-                # if not exist, register
-                register_camera(cam["app_type"], cam["camera_uid"], cam["raw_input_url"], cam["is_recording"])
-        except Exception as e:
-            logger.error(f"Error when registering camera {cam['camera_uid']} on app {cam['app_uid']}: {e}")
-            # if error, put back to the list
-            full_list_of_cameras.insert(0, cam)
-        # wait for 5 seconds
-        time.sleep(5)
+    while True:
+        full_list_of_cameras = get_cameras()
+        for cam in full_list_of_cameras:
+            try:
+                # check if cam exist on zlm
+                if check_cam_exist(cam["app_type"], cam["camera_uid"]):
+                    # if exist, do nothing
+                    logger.info(f"Camera {cam['camera_uid']} on app {cam['app_uid']} already exist on zlm")
+                else:
+                    # if not exist, register
+                    register_camera(cam["app_type"], cam["camera_uid"], cam["raw_input_url"], cam["is_recording"])
+            except Exception as e:
+                logger.error(f"Error when registering camera {cam['camera_uid']} on app {cam['app_uid']}: {e}")
+
+        # wait for X seconds
+        time.sleep(COOLDOWN_SECOND)
         
 if __name__ == "__main__":
     main()

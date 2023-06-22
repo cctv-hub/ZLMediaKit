@@ -19,8 +19,13 @@ services:
     build:
       context: ./jobs/register_all_cameras
       dockerfile: Dockerfile
-    restart: always
+    restart: on-failure
+    environment:
+      - COOLDOWN_SECOND=5
+      - DEPLOY_MODE=docker
     volumes:
       - ./conf/config.ini:/app/conf/config.ini:ro
       - ./jobs/register_all_cameras/conf/config.yaml:/app/conf/config.yaml:ro
       # - ./jobs/register_all_cameras:/app
+    depends_on:
+      - zlm-server-12345
