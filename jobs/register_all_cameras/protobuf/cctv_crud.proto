@@ -88,6 +88,17 @@ message CreateCameraRequest {
   string camera_info=6;
   string raw_input_url=7;
   string group_id=8;
+  string description=9;
+  string camera_brand=10;
+  string camera_model=11;
+  string camera_config_url=12;
+  string router_brand=13;
+  string router_model=14;
+  string router_config_url=15;
+  repeated float parameter_intrinsic_matrix=16;
+  repeated float parameter_position=17;
+  repeated float parameter_rotation=18;
+  repeated float parameter_distortion=19;
 }
 message CameraFullData {
   string camera_uid=1;
@@ -97,6 +108,17 @@ message CameraFullData {
   bool is_enabled=5;
   string camera_info=6;
   string raw_input_url=7;
+  string description=8;
+  string camera_brand=9;
+  string camera_model=10;
+  string camera_config_url=11;
+  string router_brand=12;
+  string router_model=13;
+  string router_config_url=14;
+  repeated float parameter_intrinsic_matrix=15;
+  repeated float parameter_position=16;
+  repeated float parameter_rotation=17;
+  repeated float parameter_distortion=18;
 }
 message CameraResponse {
   CameraFullData camera=1;
@@ -115,6 +137,8 @@ message AppTypeRequest {
  string name=2;
  string description=3;
  string app_type_info=4;
+ string channel_jsonschema=5;
+ string application_jsonschema=6;
 }
 message GetAppTypeByNameRequest {
  string name=1;
@@ -134,6 +158,8 @@ message AppTypeFullData {
   google.protobuf.Timestamp updated_at=5;
   bool is_enabled=6;
   string app_type_info=7;
+  string channel_jsonschema=8;
+  string application_jsonschema=9;
 }
 message CreateAppTypeRequest {
   string name=1;
@@ -142,6 +168,8 @@ message CreateAppTypeRequest {
   google.protobuf.Timestamp updated_at=4;
   bool is_enabled=5;
   string app_type_info=6;
+  string channel_jsonschema=7;
+  string application_jsonschema=8;
 }
 
 //MediaChannels

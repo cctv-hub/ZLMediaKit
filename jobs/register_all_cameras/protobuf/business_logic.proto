@@ -21,14 +21,27 @@ service bizLogic {
   rpc DeleteCameraByUid(DeleteCameraByUidRequest) returns (DeleteCameraByUidResponse);
   rpc DeleteAppByCameraUid(DeleteAppByCameraUidRequest) returns (DeleteAppByCameraUidResponse);
 
+  // Group Management svc
+  rpc ListStreamingChannelsByGroupIds(ListStreamingChannelsByGroupIdsRequest) returns (ListStreamingChannelsByGroupIdsResponse);
 }
 //RegisterCamera
 message RegisterCameraRequest {
   string group_id=1;
   string name=2;
   string camera_info=3;
-  string raw_input_url=4;
-  repeated MediaChannelInputData media_channel_config=5;
+  string description=4;
+  string camera_brand=5;
+  string camera_model=6;
+  string camera_config_url=7;
+  string router_brand=8;
+  string router_model=9;
+  string router_config_url=10;
+  repeated float parameter_intrinsic_matrix=11;
+  repeated float parameter_position=12;
+  repeated float parameter_rotation=13;
+  repeated float parameter_distortion=14;
+  string raw_input_url=15;
+  repeated MediaChannelInputData media_channel_config=16;
 }
 message RegisterCameraResponse {
   string camera_uid=1;
@@ -68,8 +81,19 @@ message GetCameraResponse {
   string group_id=2;
   string name=3;
   string camera_info=4;
-  string raw_input_url=5;
-  repeated MediaChannelOutputData media_channel_data=6;
+  string description=5;
+  string camera_brand=6;
+  string camera_model=7;
+  string camera_config_url=8;
+  string router_brand=9;
+  string router_model=10;
+  string router_config_url=11;
+  repeated float parameter_intrinsic_matrix=12;
+  repeated float parameter_position=13;
+  repeated float parameter_rotation=14;
+  repeated float parameter_distortion=15;
+  string raw_input_url=16;
+  repeated MediaChannelOutputData media_channel_data=17;
 }
 
 //GetCameraByGroupAndName
@@ -114,3 +138,22 @@ message DeleteAppByCameraUidRequest {
 message DeleteAppByCameraUidResponse {
   bool success=1;
 }
+
+//ListStreamingChannelsByGroupIds
+message ListStreamingChannelsByGroupIdsRequest {
+  repeated string group_ids=1;
+}
+message StreamingChannelForFrontend {
+  string media_channel_info=1;
+  int32 media_channel_id=2;
+  string display_msg=3;
+  string camera_uid=4;
+  string app_uid=5;
+  bool is_recording=6;
+  string camera_info=7;
+  string camera_name=8;
+}
+message ListStreamingChannelsByGroupIdsResponse {
+  repeated StreamingChannelForFrontend channels=1;
+}
+

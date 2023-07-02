@@ -55,6 +55,11 @@ class bizLogicStub(object):
                 request_serializer=business__logic__pb2.DeleteAppByCameraUidRequest.SerializeToString,
                 response_deserializer=business__logic__pb2.DeleteAppByCameraUidResponse.FromString,
                 )
+        self.ListStreamingChannelsByGroupIds = channel.unary_unary(
+                '/bizLogic.bizLogic/ListStreamingChannelsByGroupIds',
+                request_serializer=business__logic__pb2.ListStreamingChannelsByGroupIdsRequest.SerializeToString,
+                response_deserializer=business__logic__pb2.ListStreamingChannelsByGroupIdsResponse.FromString,
+                )
 
 
 class bizLogicServicer(object):
@@ -113,6 +118,13 @@ class bizLogicServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def ListStreamingChannelsByGroupIds(self, request, context):
+        """Group Management svc
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_bizLogicServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -155,6 +167,11 @@ def add_bizLogicServicer_to_server(servicer, server):
                     servicer.DeleteAppByCameraUid,
                     request_deserializer=business__logic__pb2.DeleteAppByCameraUidRequest.FromString,
                     response_serializer=business__logic__pb2.DeleteAppByCameraUidResponse.SerializeToString,
+            ),
+            'ListStreamingChannelsByGroupIds': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListStreamingChannelsByGroupIds,
+                    request_deserializer=business__logic__pb2.ListStreamingChannelsByGroupIdsRequest.FromString,
+                    response_serializer=business__logic__pb2.ListStreamingChannelsByGroupIdsResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -300,5 +317,22 @@ class bizLogic(object):
         return grpc.experimental.unary_unary(request, target, '/bizLogic.bizLogic/DeleteAppByCameraUid',
             business__logic__pb2.DeleteAppByCameraUidRequest.SerializeToString,
             business__logic__pb2.DeleteAppByCameraUidResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def ListStreamingChannelsByGroupIds(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/bizLogic.bizLogic/ListStreamingChannelsByGroupIds',
+            business__logic__pb2.ListStreamingChannelsByGroupIdsRequest.SerializeToString,
+            business__logic__pb2.ListStreamingChannelsByGroupIdsResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
