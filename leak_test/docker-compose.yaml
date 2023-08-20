@@ -1,0 +1,17 @@
+version: "3.7"
+services:
+  zlm-server-12345:
+    container_name: zlm-server-12345
+    image: zlmediakit/zlmediakit:Debug.20230729
+    ports:
+      - "1935:1935"
+      - "8554:554"
+      - "8080:80"
+    restart: always
+    volumes:
+      - ./zlm-server-config.ini:/opt/media/conf/config.ini:ro
+  rtsp-sim-perfect:
+    image: bluenviron/mediamtx:latest-ffmpeg
+    volumes:
+      - ./mediamtx.yml:/mediamtx.yml
+      - ./DejaVuSans.ttf:/usr/share/fonts/truetype/DejaVuSans.ttf

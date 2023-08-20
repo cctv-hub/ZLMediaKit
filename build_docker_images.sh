@@ -78,7 +78,7 @@ case $type in
 	'build')
 	rm -rf ./build/CMakeCache.txt
 	# 以腾讯云账号为例
-	docker buildx build --platform=$platform --network=host --build-arg MODEL=$model -t $namespace/$packagename:$model.$version .
+	docker buildx build --platform=$platform --load --build-arg MODEL=$model -t $namespace/$packagename:$model.$version .
 	#docker build --network=host --build-arg MODEL=$model -t $namespace/$packagename:$model.$version .
 		;;
 	'push')

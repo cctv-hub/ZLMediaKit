@@ -45,7 +45,7 @@ WORKDIR /opt/media/ZLMediaKit
 RUN mkdir -p build release/linux/${MODEL}/
 
 WORKDIR /opt/media/ZLMediaKit/build
-RUN cmake -DCMAKE_BUILD_TYPE=${MODEL} -DENABLE_MEM_DEBUG=on -DENABLE_WEBRTC=true -DENABLE_FFMPEG=true -DENABLE_TESTS=false -DENABLE_API=false .. && \
+RUN cmake -DCMAKE_BUILD_TYPE=${MODEL} -DENABLE_WEBRTC=true -DENABLE_FFMPEG=true -DENABLE_TESTS=false -DENABLE_API=false .. && \
     make -j $(nproc)
 
 FROM ubuntu:18.04

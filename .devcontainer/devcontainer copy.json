@@ -1,0 +1,5 @@
+{
+    "name": "Flutter",
+    "image": "instrumentisto/flutter:3.10.0",
+    "extensions": ["dart-code.dart-code", "dart-code.flutter"]
+  }
