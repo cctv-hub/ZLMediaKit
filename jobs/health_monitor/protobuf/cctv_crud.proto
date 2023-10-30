@@ -1,0 +1,197 @@
+syntax = "proto3";
+package cctvCrud;
+import "google/protobuf/timestamp.proto";
+
+option go_package = "./pkg/api/cctvCrud";
+
+// The CctvCrud service definition.
+service CctvCrud {
+  // crud for table camera
+  rpc UpdateCameraNameByUid(CameraRequest) returns (CameraResponse );
+  rpc GetCameraByUid(GetCameraByUidRequest) returns ( CameraFullData );
+  rpc CreateCamera(CreateCameraRequest) returns (CameraResponse );
+  rpc DeleteCameraByUid(CameraRequest) returns (CameraResponse );
+
+  // crud for table application
+  rpc UpdateApplicationHostByUid(ApplicationRequest) returns (ApplicationResponse );
+  rpc GetApplicationByUid(GetApplicationByUidRequest) returns ( ApplicationFullData );
+  rpc ListApplicationByHost(ListApplicationByHostRequest) returns (ListApplicationResponse);
+  rpc CreateApplication(CreateApplicationRequest) returns ( ApplicationResponse );
+  rpc DeleteApplicationByUid(ApplicationRequest) returns ( ApplicationResponse );
+
+  // crud for table app_type
+  rpc UpdateAppTypeById(AppTypeRequest) returns ( AppTypeResponse );
+  rpc GetAppTypeByName(GetAppTypeByNameRequest) returns ( AppTypeFullData );
+  rpc GetAppTypeById(GetAppTypeByIdRequest) returns ( AppTypeFullData );
+  rpc CreateAppType(CreateAppTypeRequest) returns ( AppTypeResponse );
+  rpc DeleteAppTypeById(AppTypeRequest) returns ( AppTypeResponse );
+
+  // crud for table media_channels
+  rpc UpdateMediaChannelsByMediaChannelId(MediaChannelsRequest) returns ( MediaChannelsResponse );
+  rpc ListMediaChannelsByCameraUid(ListMediaChannelsByCameraUidRequest) returns ( ListMediaChannelsResponse );
+  rpc ListMediaChannelsByAppUid(MediaChannelsRequest) returns ( ListMediaChannelsResponse );
+  rpc CreateMediaChannels(MediaChannelsRequest) returns ( MediaChannelsResponse );
+  rpc DeleteMediaChannelsByCameraUid(MediaChannelsRequest) returns ( ListMediaChannelsResponse );
+
+}
+//Application
+message GetApplicationByUidRequest {
+  string app_uid=1;
+}
+message ApplicationResponse {
+  ApplicationFullData application=1;
+  bool success=2;
+}
+message ApplicationFullData {
+  string app_uid=1;
+  string group_id=2;
+  string host=3;
+  google.protobuf.Timestamp created_at=4;
+  google.protobuf.Timestamp updated_at=5;
+  bool is_enabled=6;
+  string application_info=7;
+  int32 app_type_id=8;
+}
+message CreateApplicationRequest {
+  string app_uid=1;
+  string group_id=2;
+  string host=3;
+  google.protobuf.Timestamp created_at=4;
+  google.protobuf.Timestamp updated_at=5;
+  bool is_enabled=6;
+  string application_info=7;
+  int32 app_type_id=8;
+}
+message ApplicationRequest {
+  string app_uid=1;
+  string group_id=2;
+  string host=3;
+}
+message ListApplicationByHostRequest {
+  string host=1;
+}
+message ListApplicationResponse {
+  repeated ApplicationFullData applications=1;
+  bool success=2;
+}
+
+//Camera
+message GetCameraByUidRequest {
+  string camera_uid=1;
+}
+message CreateCameraRequest {
+  string camera_uid=1;
+  string name=2;
+  google.protobuf.Timestamp created_at=3;
+  google.protobuf.Timestamp updated_at=4;
+  bool is_enabled=5;
+  string camera_info=6;
+  string raw_input_url=7;
+  string group_id=8;
+  string description=9;
+  string camera_brand=10;
+  string camera_model=11;
+  string camera_config_url=12;
+  string router_brand=13;
+  string router_model=14;
+  string router_config_url=15;
+  repeated float parameter_intrinsic_matrix=16;
+  repeated float parameter_position=17;
+  repeated float parameter_rotation=18;
+  repeated float parameter_distortion=19;
+}
+message CameraFullData {
+  string camera_uid=1;
+  string name=2;
+  google.protobuf.Timestamp created_at=3;
+  google.protobuf.Timestamp updated_at=4;
+  bool is_enabled=5;
+  string camera_info=6;
+  string raw_input_url=7;
+  string description=8;
+  string camera_brand=9;
+  string camera_model=10;
+  string camera_config_url=11;
+  string router_brand=12;
+  string router_model=13;
+  string router_config_url=14;
+  repeated float parameter_intrinsic_matrix=15;
+  repeated float parameter_position=16;
+  repeated float parameter_rotation=17;
+  repeated float parameter_distortion=18;
+}
+message CameraResponse {
+  CameraFullData camera=1;
+  bool success=2;
+}
+message CameraRequest {
+  string camera_uid=1;
+  string name=2;
+  string group_id=3;
+}
+
+
+//AppType
+message AppTypeRequest {
+ int32 app_type_id=1;
+ string name=2;
+ string description=3;
+ string app_type_info=4;
+ string channel_jsonschema=5;
+ string application_jsonschema=6;
+}
+message GetAppTypeByNameRequest {
+ string name=1;
+}
+message GetAppTypeByIdRequest {
+ int32 app_type_id=1;
+}
+message AppTypeResponse {
+  AppTypeFullData app_type=1;
+  bool success=2;
+}
+message AppTypeFullData {
+  int32 app_type_id=1;
+  string name=2;
+  string description=3;
+  google.protobuf.Timestamp created_at=4;
+  google.protobuf.Timestamp updated_at=5;
+  bool is_enabled=6;
+  string app_type_info=7;
+  string channel_jsonschema=8;
+  string application_jsonschema=9;
+}
+message CreateAppTypeRequest {
+  string name=1;
+  string description=2;
+  google.protobuf.Timestamp created_at=3;
+  google.protobuf.Timestamp updated_at=4;
+  bool is_enabled=5;
+  string app_type_info=6;
+  string channel_jsonschema=7;
+  string application_jsonschema=8;
+}
+
+//MediaChannels
+message ListMediaChannelsByCameraUidRequest {
+  string camera_uid=1;
+}
+message MediaChannelsResponse {
+  MediaChannelsRequest media_channels=1;
+  bool success=2;
+}
+message MediaChannelsRequest {
+  int32 media_channel_id=1;
+  string camera_uid=2;
+  string app_uid=3;
+  string media_channel_info=4;
+  bool is_enabled=5;
+  google.protobuf.Timestamp created_at=7;
+  google.protobuf.Timestamp updated_at=6;
+  bool is_recording=8;
+}
+message ListMediaChannelsResponse {
+  repeated MediaChannelsRequest media_channels=1;
+  bool success=2;
+}
+

@@ -1,0 +1,10 @@
+tests/
+.vscode
+.pytest_cache
+conf/
+protobuf/
+.gitignore
+.dockerignore
+dockerfile
+README.md
+__pycache__/
