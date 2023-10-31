@@ -32,12 +32,6 @@ host = zlm_server_cfg['general']['mediaserverid']
 zlm_secret = zlm_server_cfg['api']['secret']
 zlm_vhost = "__defaultVhost__" # this is the default value if general.enableVhost is false
 
-def _resolve_host(h):
-    if DEPLOY_MODE == "docker":
-        return "zlm-server-" + h
-    else:
-        return h
-
 def get_cameras():
     # Get the list of cameras from db
     full_list_of_cameras = []
@@ -89,7 +83,7 @@ def resolve_server_dns(zlm_server_id, is_internal=True):
         # external
         return f"{cfg['root_domain']}"
 
-def check_health(host, app_type_name, camera_uid, mode):
+def check_health(host, app_type_name, camera_uid, mode) -> bool:
     if mode == "rtsp":
         output = f"http://{resolve_server_dns(host,is_internal=True)}/{app_type_name}/{camera_uid}"
     elif mode == "hls":
@@ -97,25 +91,36 @@ def check_health(host, app_type_name, camera_uid, mode):
     with cv2.VideoCapture(output) as cap:
         return cap.isOpened()
 
-def write_health_log():
+def write_health_log(media_channel_id,snapshot_health,rtsp_out_health,hls_out_health):
     # call CreateMediaChannelHealthLog from zlm-load-balancer
-    pass
+    try:
+        response = cctv_crud_stub.CreateMediaChannelHealthLog(CreateMediaChannelHealthLogRequest(
+            media_channel_id = media_channel_id,
+            snapshot_health = snapshot_health,
+            rtsp_out_health = rtsp_out_health,
+            hls_out_health = hls_out_health,
+            )
+        )
+        logger.debug(f"CreateMediaChannelHealthLog response: {response}")
+    except Exception as e:
+        logger.error(f"Error when calling CreateMediaChannelHealthLog: {e}")
+
 def main():
     # get cam list from db
     while True:
         full_list_of_cameras = get_cameras()
         for cam in full_list_of_cameras:
             try:
-                # check if cam exist on zlm
-                if check_cam_exist(cam["app_type"], cam["camera_uid"]):
-                    # if exist, do nothing
-                    logger.info(f"Camera {cam['camera_uid']} on app {cam['app_uid']} already exist on zlm")
-                else:
-                    # if not exist, register
-                    register_camera(cam["app_type"], cam["camera_uid"], cam["raw_input_url"], cam["is_recording"])
+                # check snapshot health
+                snapshot_health = check_health(cam["host"], cam["app_type"], cam["camera_uid"], "snapshot")
+                # check rtsp health
+                rtsp_out_health = check_health(cam["host"], cam["app_type"], cam["camera_uid"], "rtsp")
+                # check hls health
+                hls_out_health = check_health(cam["host"], cam["app_type"], cam["camera_uid"], "hls")
+                # write health log
+                write_health_log(cam["media_channel_id"],snapshot_health,rtsp_out_health,hls_out_health)
             except Exception as e:
-                logger.error(f"Error when registering camera {cam['camera_uid']} on app {cam['app_uid']}: {e}")
-
+                logger.error(f"Error when checking health on {cam=}: {e}")
         # wait for X seconds
         time.sleep(COOLDOWN_SECOND)
         
