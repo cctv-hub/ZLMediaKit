@@ -8,7 +8,7 @@ from grpc_gen_code.cctv_crud_pb2_grpc import CctvCrudStub
 from grpc_gen_code.cctv_crud_pb2 import (
     ListApplicationByHostRequest,
     MediaChannelsRequest,
-    GetCameraByUidRequest,
+    CreateMediaChannelHealthLogRequest,
     GetAppTypeByIdRequest
 )
 import time
@@ -97,31 +97,9 @@ def check_health(host, app_type_name, camera_uid, mode):
     with cv2.VideoCapture(output) as cap:
         return cap.isOpened()
 
-def write_health_log(app_type, camera_uid, raw_input_url,is_recording):
-    schema = raw_input_url.split("://")[0]
-    response = requests.get(f"http://{_resolve_host(host)}/index/api/addStreamProxy",
-                             params={
-                                    "secret": zlm_secret,
-                                    "schema": schema,
-                                    "vhost": zlm_vhost,
-                                    "app": app_type,
-                                    "stream": camera_uid,
-                                    "url": raw_input_url,
-                                    "enable_hls": 1,
-                                    "enable_mp4": int(is_recording),
-                                    "enable_rtsp": 1
-                                })
-    if response.status_code != 200:
-        logger.error(f"Error when registering camera {camera_uid} on app {app_type}")
-        raise Exception(f"Error when registering camera {camera_uid} on app {app_type}")
-    else:
-        response = response.json()
-        if response["code"] == 0:
-            logger.info(f"Camera {camera_uid} on app {app_type} registered successfully")
-            return response['data']['key']
-        else:
-            raise Exception(f"Error when registering camera {camera_uid} on app {app_type}")
-
+def write_health_log():
+    # call CreateMediaChannelHealthLog from zlm-load-balancer
+    pass
 def main():
     # get cam list from db
     while True:

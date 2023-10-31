@@ -110,6 +110,16 @@ class CctvCrudStub(object):
                 request_serializer=cctv__crud__pb2.MediaChannelsRequest.SerializeToString,
                 response_deserializer=cctv__crud__pb2.ListMediaChannelsResponse.FromString,
                 )
+        self.ListLatestMediaChannelHealthLog = channel.unary_unary(
+                '/cctvCrud.CctvCrud/ListLatestMediaChannelHealthLog',
+                request_serializer=cctv__crud__pb2.ListLatestMediaChannelHealthLogRequest.SerializeToString,
+                response_deserializer=cctv__crud__pb2.ListLatestMediaChannelHealthLogResponse.FromString,
+                )
+        self.CreateMediaChannelHealthLog = channel.unary_unary(
+                '/cctvCrud.CctvCrud/CreateMediaChannelHealthLog',
+                request_serializer=cctv__crud__pb2.CreateMediaChannelHealthLogRequest.SerializeToString,
+                response_deserializer=cctv__crud__pb2.CreateMediaChannelHealthLogResponse.FromString,
+                )
 
 
 class CctvCrudServicer(object):
@@ -234,6 +244,19 @@ class CctvCrudServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def ListLatestMediaChannelHealthLog(self, request, context):
+        """create and read for table media_channel_health_log
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CreateMediaChannelHealthLog(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_CctvCrudServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -331,6 +354,16 @@ def add_CctvCrudServicer_to_server(servicer, server):
                     servicer.DeleteMediaChannelsByCameraUid,
                     request_deserializer=cctv__crud__pb2.MediaChannelsRequest.FromString,
                     response_serializer=cctv__crud__pb2.ListMediaChannelsResponse.SerializeToString,
+            ),
+            'ListLatestMediaChannelHealthLog': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListLatestMediaChannelHealthLog,
+                    request_deserializer=cctv__crud__pb2.ListLatestMediaChannelHealthLogRequest.FromString,
+                    response_serializer=cctv__crud__pb2.ListLatestMediaChannelHealthLogResponse.SerializeToString,
+            ),
+            'CreateMediaChannelHealthLog': grpc.unary_unary_rpc_method_handler(
+                    servicer.CreateMediaChannelHealthLog,
+                    request_deserializer=cctv__crud__pb2.CreateMediaChannelHealthLogRequest.FromString,
+                    response_serializer=cctv__crud__pb2.CreateMediaChannelHealthLogResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -663,5 +696,39 @@ class CctvCrud(object):
         return grpc.experimental.unary_unary(request, target, '/cctvCrud.CctvCrud/DeleteMediaChannelsByCameraUid',
             cctv__crud__pb2.MediaChannelsRequest.SerializeToString,
             cctv__crud__pb2.ListMediaChannelsResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def ListLatestMediaChannelHealthLog(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/cctvCrud.CctvCrud/ListLatestMediaChannelHealthLog',
+            cctv__crud__pb2.ListLatestMediaChannelHealthLogRequest.SerializeToString,
+            cctv__crud__pb2.ListLatestMediaChannelHealthLogResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def CreateMediaChannelHealthLog(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/cctvCrud.CctvCrud/CreateMediaChannelHealthLog',
+            cctv__crud__pb2.CreateMediaChannelHealthLogRequest.SerializeToString,
+            cctv__crud__pb2.CreateMediaChannelHealthLogResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

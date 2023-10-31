@@ -33,6 +33,10 @@ service CctvCrud {
   rpc CreateMediaChannels(MediaChannelsRequest) returns ( MediaChannelsResponse );
   rpc DeleteMediaChannelsByCameraUid(MediaChannelsRequest) returns ( ListMediaChannelsResponse );
 
+  // create and read for table media_channel_health_log
+  rpc ListLatestMediaChannelHealthLog(ListLatestMediaChannelHealthLogRequest) returns ( ListLatestMediaChannelHealthLogResponse );
+  rpc CreateMediaChannelHealthLog(CreateMediaChannelHealthLogRequest) returns ( CreateMediaChannelHealthLogResponse );
+
 }
 //Application
 message GetApplicationByUidRequest {
@@ -195,3 +199,24 @@ message ListMediaChannelsResponse {
   bool success=2;
 }
 
+message ListLatestMediaChannelHealthLogRequest {
+  repeated int32 media_channel_ids=1;
+}
+
+message ListLatestMediaChannelHealthLogResponse {
+  repeated CreateMediaChannelHealthLogRequest LatestMediaChannelHealthLog=1;
+}
+
+message CreateMediaChannelHealthLogRequest {
+  google.protobuf.Timestamp created_at=1;
+  int32 media_channel_id=2;
+  bool snapshot_health=3;
+  bool rtsp_out_health=4;
+  bool hls_out_health=5;
+}
+
+message CreateMediaChannelHealthLogResponse {
+  google.protobuf.Timestamp created_at=1;
+  int32 media_channel_id=2;
+  bool success=3;
+}
