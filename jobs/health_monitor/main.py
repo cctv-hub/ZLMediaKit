@@ -69,25 +69,31 @@ def get_cameras():
     logger.debug(f"{full_list_of_cameras=}")
     return full_list_of_cameras
 
-def resolve_server_dns(zlm_server_id, is_internal=True):
-    if is_internal:
-        deploy_mode = os.environ.get("DEPLOY_MODE", "docker")
-        if deploy_mode == "k8s":
-            # k8s
-            ZLMediaKit_URL = f"{zlm_server_id}.cctv-hub.svc.cluster.local"
+def resolve_url(zlm_server_id, app_type_name, camera_uid, is_internal, mode):
+    def resolve_server_dns(zlm_server_id, is_internal=True):
+        if is_internal:
+            deploy_mode = os.environ.get("DEPLOY_MODE", "docker")
+            if deploy_mode == "k8s":
+                # k8s
+                ZLMediaKit_URL = f"{zlm_server_id}.cctv-hub.svc.cluster.local"
+            else:
+                # docker
+                ZLMediaKit_URL = f"zlm-server-{zlm_server_id}"
+            return ZLMediaKit_URL
         else:
-            # docker
-            ZLMediaKit_URL = f"zlm-server-{zlm_server_id}"
-        return ZLMediaKit_URL
+            # external
+            return f"{cfg['root_domain']}"
+    
+    if mode == "rtsp":
+        output = f"http://{resolve_server_dns(zlm_server_id,is_internal=is_internal)}/{app_type_name}/{camera_uid}"
+    elif mode == "hls":
+        output = f"http://{resolve_server_dns(zlm_server_id,is_internal=is_internal)}/{app_type_name}/{camera_uid}/hls.m3u8"
     else:
-        # external
-        return f"{cfg['root_domain']}"
+        raise ValueError(f"Invalid mode: {mode}")
+    return output
 
 def check_health(host, app_type_name, camera_uid, mode) -> bool:
-    if mode == "rtsp":
-        output = f"http://{resolve_server_dns(host,is_internal=True)}/{app_type_name}/{camera_uid}"
-    elif mode == "hls":
-        output = f"http://{resolve_server_dns(host,is_internal=True)}/{app_type_name}/{camera_uid}/hls.m3u8"
+    output = resolve_url(host, app_type_name, camera_uid, is_internal=True, mode=mode)
     with cv2.VideoCapture(output) as cap:
         return cap.isOpened()
 
@@ -111,12 +117,12 @@ def main():
         full_list_of_cameras = get_cameras()
         for cam in full_list_of_cameras:
             try:
-                # check snapshot health
-                snapshot_health = check_health(cam["host"], cam["app_type"], cam["camera_uid"], "snapshot")
                 # check rtsp health
                 rtsp_out_health = check_health(cam["host"], cam["app_type"], cam["camera_uid"], "rtsp")
                 # check hls health
                 hls_out_health = check_health(cam["host"], cam["app_type"], cam["camera_uid"], "hls")
+                # check snapshot health
+                snapshot_health = hls_out_health # assume snapshot health is the same as hls health
                 # write health log
                 write_health_log(cam["media_channel_id"],snapshot_health,rtsp_out_health,hls_out_health)
             except Exception as e:
