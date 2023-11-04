@@ -11,6 +11,7 @@ from grpc_gen_code.cctv_crud_pb2 import (
     CreateMediaChannelHealthLogRequest,
     GetAppTypeByIdRequest
 )
+from google.protobuf.timestamp_pb2 import Timestamp
 import time
 import grpc
 import cv2
@@ -107,6 +108,7 @@ def write_health_log(media_channel_id,snapshot_health,rtsp_out_health,hls_out_he
             snapshot_health = snapshot_health,
             rtsp_out_health = rtsp_out_health,
             hls_out_health = hls_out_health,
+            created_at = Timestamp(seconds=0,nanos=0)
             )
         )
         logger.debug(f"CreateMediaChannelHealthLog response: {response}")
