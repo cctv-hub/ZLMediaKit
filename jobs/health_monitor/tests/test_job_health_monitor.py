@@ -124,7 +124,7 @@ def test_get_cameras(mocker):
             "camera_uid": "cameraUid1",
             "is_recording": True,
             "app_type": "apptype1",
-            "host": "",
+            "host": "host1",
         }
     assert result[1] == {
             "app_uid": "appUid2",

@@ -94,8 +94,10 @@ def resolve_url(zlm_server_id, app_type_name, camera_uid, is_internal, mode):
 
 def check_health(host, app_type_name, camera_uid, mode) -> bool:
     output = resolve_url(host, app_type_name, camera_uid, is_internal=True, mode=mode)
-    with cv2.VideoCapture(output) as cap:
-        return cap.isOpened()
+    cap = cv2.VideoCapture(output)
+    result = cap.isOpened()
+    cap.release()
+    return result
 
 def write_health_log(media_channel_id,snapshot_health,rtsp_out_health,hls_out_health):
     # call CreateMediaChannelHealthLog from zlm-load-balancer
