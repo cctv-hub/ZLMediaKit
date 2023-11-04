@@ -164,3 +164,12 @@ def test_check_health(mocker):
                                     "test",
                                     "test"
                                     ) == True
+
+def test_check_health_fail(mocker):
+    mocker.patch('main.resolve_url', return_value="rtmp://localhost/whatever")
+    mocker.patch('main.requests.get', side_effect=requests.exceptions.ConnectionError)
+    assert health_monitor.check_health("rtmp://localhost/whatever",
+                                    "test",
+                                    "test",
+                                    "test"
+                                    ) == False
