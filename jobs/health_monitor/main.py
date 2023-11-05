@@ -86,7 +86,7 @@ def resolve_url(zlm_server_id, app_type_name, camera_uid, is_internal, mode):
             return f"{cfg['root_domain']}"
     
     if mode == "rtsp":
-        output = f"http://{resolve_server_dns(zlm_server_id,is_internal=is_internal)}/{app_type_name}/{camera_uid}"
+        output = f"rtsp://{resolve_server_dns(zlm_server_id,is_internal=is_internal)}/{app_type_name}/{camera_uid}"
     elif mode == "hls":
         output = f"http://{resolve_server_dns(zlm_server_id,is_internal=is_internal)}/{app_type_name}/{camera_uid}/hls.m3u8"
     else:
