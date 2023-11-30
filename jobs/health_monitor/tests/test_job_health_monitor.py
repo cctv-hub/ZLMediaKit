@@ -10,6 +10,13 @@ from grpc_gen_code.cctv_crud_pb2 import (
 )
 import requests
 import pytest
+import asyncio
+
+pytest_plugins = ('anyio')
+
+@pytest.fixture
+def anyio_backend():
+    return 'asyncio'
 
 def test_get_cameras(mocker):
     mocker.patch('main.cctv_crud_stub.ListApplicationByHost'
@@ -139,7 +146,7 @@ def test_get_cameras(mocker):
             "app_type": "apptype2"
         }
 
-def _test_health_monitor(mocker):
+def test_check_cam_health_tasks(mocker):
     mocker.patch('main.get_cameras', return_value=[
                     {
                         "app_uid": "aiohe",
@@ -155,7 +162,10 @@ def _test_health_monitor(mocker):
                     }
                 ]
             )
-    pass
+    mocker.patch('main.resolve_url', return_value="rtmp://ns8.indexforce.com/home/mystream")
+    mocker.patch('main.write_health_log', return_value=True)
+    no_error = health_monitor.check_cam_health_tasks("12345", "streaming", "boi9mnahgn", 1)
+    assert no_error
 
 def test_check_health(mocker):
     mocker.patch('main.resolve_url', return_value="rtmp://ns8.indexforce.com/home/mystream")
@@ -173,3 +183,75 @@ def test_check_health_fail(mocker):
                                     "test",
                                     "test"
                                     ) == False
+
+@pytest.mark.anyio
+async def test_acheck_health(mocker):
+    mocker.patch('main.resolve_url', return_value="rtmp://ns8.indexforce.com/home/mystream")
+    r = await health_monitor.acheck_health("rtmp://ns8.indexforce.com/home/mystream",
+                                    "test",
+                                    "test",
+                                    "test"
+                                    ) == True
+    assert r == True
+
+@pytest.mark.anyio
+async def test_acheck_cam_health_tasks(mocker):
+    mocker.patch('main.get_cameras', return_value=[
+                    {
+                        "app_uid": "aiohe",
+                        "group_id": "9cb5c1d8-31be-44a5-b8d8-32bb6c3d57a4",
+                        "application_info": {},
+                        "host": "12345",
+                        "app_type": "streaming",
+                        "media_channel_id": 1,
+                        "media_channel_info": {},
+                        "camera_uid": "boi9mnahgn",
+                        "is_enabled": True,
+                        "is_recording": True,
+                    }
+                ]
+            )
+    mocker.patch('main.resolve_url', return_value="rtmp://ns8.indexforce.com/home/mystream")
+    mocker.patch('main.write_health_log', return_value=True)
+    no_error = await health_monitor.acheck_cam_health_tasks("12345", "streaming", "boi9mnahgn", 1)
+    assert no_error
+
+def test_amain(mocker):
+    mocker.patch('main.get_cameras', return_value=[
+                    {
+                        "app_uid": "aiohe",
+                        "group_id": "9cb5c1d8-31be-44a5-b8d8-32bb6c3d57a4",
+                        "application_info": {},
+                        "host": "12345",
+                        "app_type": "streaming",
+                        "media_channel_id": 1,
+                        "media_channel_info": {},
+                        "camera_uid": "boi9mnahgn",
+                        "is_enabled": True,
+                        "is_recording": True,
+                    }
+                ]
+            )
+    mocker.patch('main.resolve_url', return_value="rtmp://ns8.indexforce.com/home/mystream")
+    mocker.patch('main.write_health_log', return_value=True)
+    health_monitor.amain()
+
+def test_main(mocker):
+    mocker.patch('main.get_cameras', return_value=[
+                    {
+                        "app_uid": "aiohe",
+                        "group_id": "9cb5c1d8-31be-44a5-b8d8-32bb6c3d57a4",
+                        "application_info": {},
+                        "host": "12345",
+                        "app_type": "streaming",
+                        "media_channel_id": 1,
+                        "media_channel_info": {},
+                        "camera_uid": "boi9mnahgn",
+                        "is_enabled": True,
+                        "is_recording": True,
+                    }
+                ]
+            )
+    mocker.patch('main.resolve_url', return_value="rtmp://ns8.indexforce.com/home/mystream")
+    mocker.patch('main.write_health_log', return_value=True)
+    health_monitor.main()

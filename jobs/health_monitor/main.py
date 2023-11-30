@@ -15,6 +15,7 @@ from google.protobuf.timestamp_pb2 import Timestamp
 import time
 import grpc
 import cv2
+import asyncio
 
 DEPLOY_MODE = os.environ.get('DEPLOY_MODE', 'docker')
 COOLDOWN_SECOND = int(os.environ.get('COOLDOWN_SECOND', "5"))
@@ -96,9 +97,41 @@ def resolve_url(zlm_server_id, app_type_name, camera_uid, is_internal, mode):
 def check_health(host, app_type_name, camera_uid, mode) -> bool:
     output = resolve_url(host, app_type_name, camera_uid, is_internal=True, mode=mode)
     cap = cv2.VideoCapture(output)
-    result = cap.isOpened()
+    i = 0
+    result = []
+    while i < 10:
+        result.append(cap.isOpened())
+        time.sleep(1)
+        i += 1
     cap.release()
+    return any(result)
+
+async def acheck_health(host, app_type_name, camera_uid, mode) -> bool:
+    _loop = asyncio.get_event_loop()
+    result = await _loop.run_in_executor(None, check_health, host, app_type_name, camera_uid, mode)
     return result
+
+def check_cam_health_tasks(host, app_type_name, camera_uid, media_channel_id):
+    # check rtsp health
+    rtsp_out_health = check_health(host,app_type_name,camera_uid, "rtsp")
+    # check hls health
+    hls_out_health = check_health(host,app_type_name,camera_uid, "hls")
+    # check snapshot health
+    snapshot_health = hls_out_health # assume snapshot health is the same as hls health
+    # write health log
+    no_error = write_health_log(media_channel_id,snapshot_health,rtsp_out_health,hls_out_health)
+    return no_error
+
+async def acheck_cam_health_tasks(host, app_type_name, camera_uid, media_channel_id):
+    # check rtsp health
+    rtsp_out_health = await acheck_health(host,app_type_name,camera_uid, "rtsp")
+    # check hls health
+    hls_out_health = await acheck_health(host,app_type_name,camera_uid, "hls")
+    # check snapshot health
+    snapshot_health = hls_out_health # assume snapshot health is the same as hls health
+    # write health log
+    no_error = write_health_log(media_channel_id,snapshot_health,rtsp_out_health,hls_out_health)
+    return no_error
 
 def write_health_log(media_channel_id,snapshot_health,rtsp_out_health,hls_out_health):
     # call CreateMediaChannelHealthLog from zlm-load-balancer
@@ -112,8 +145,10 @@ def write_health_log(media_channel_id,snapshot_health,rtsp_out_health,hls_out_he
             )
         )
         logger.debug(f"CreateMediaChannelHealthLog response: {response}")
+        return True
     except Exception as e:
         logger.error(f"Error when calling CreateMediaChannelHealthLog: {e}")
+        return False
 
 def main():
     # get cam list from db
@@ -121,18 +156,25 @@ def main():
         full_list_of_cameras = get_cameras()
         for cam in full_list_of_cameras:
             try:
-                # check rtsp health
-                rtsp_out_health = check_health(cam["host"], cam["app_type"], cam["camera_uid"], "rtsp")
-                # check hls health
-                hls_out_health = check_health(cam["host"], cam["app_type"], cam["camera_uid"], "hls")
-                # check snapshot health
-                snapshot_health = hls_out_health # assume snapshot health is the same as hls health
-                # write health log
-                write_health_log(cam["media_channel_id"],snapshot_health,rtsp_out_health,hls_out_health)
+                check_cam_health_tasks(cam["host"],cam["app_type"],cam["camera_uid"],cam["media_channel_id"])
             except Exception as e:
                 logger.error(f"Error when checking health on {cam=}: {e}")
         # wait for X seconds
         time.sleep(COOLDOWN_SECOND)
         
+async def amain():
+    # get cam list from db
+    while True:
+        full_list_of_cameras = get_cameras()
+        tasks = []
+        for cam in full_list_of_cameras:
+            try:
+                tasks.append(acheck_cam_health_tasks(cam["host"],cam["app_type"],cam["camera_uid"],cam["media_channel_id"]))
+            except Exception as e:
+                logger.error(f"Error when checking health on {cam=}: {e}")
+        await asyncio.run(asyncio.gather(*tasks))
+        # wait for X seconds
+        time.sleep(COOLDOWN_SECOND)
+
 if __name__ == "__main__":
     main()
