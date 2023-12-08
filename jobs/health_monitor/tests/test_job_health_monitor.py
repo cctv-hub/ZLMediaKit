@@ -234,7 +234,7 @@ def test_amain(mocker):
             )
     mocker.patch('main.resolve_url', return_value="rtmp://ns8.indexforce.com/home/mystream")
     mocker.patch('main.write_health_log', return_value=True)
-    health_monitor.amain()
+    health_monitor.amain(trail_run=1)
 
 def test_main(mocker):
     mocker.patch('main.get_cameras', return_value=[
@@ -254,4 +254,4 @@ def test_main(mocker):
             )
     mocker.patch('main.resolve_url', return_value="rtmp://ns8.indexforce.com/home/mystream")
     mocker.patch('main.write_health_log', return_value=True)
-    health_monitor.main()
+    health_monitor.main(trail_run=1)
