@@ -29,3 +29,15 @@ services:
       # - ./jobs/register_all_cameras:/app
     depends_on:
       - zlm-server-12345
+
+  job_health_monitor-12345:
+    build: ./jobs/health_monitor
+    restart: on-failure
+    environment:
+      - COOLDOWN_SECOND=3600
+      - DEPLOY_MODE=docker
+    depends_on:
+      - zlm-server-12345
+    volumes:
+      - ./conf/config.ini:/app/conf/config.ini:ro
+      - ./jobs/health_monitor/conf/config.yaml:/app/conf/config.yaml:ro
