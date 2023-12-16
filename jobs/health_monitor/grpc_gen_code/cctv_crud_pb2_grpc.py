@@ -15,9 +15,9 @@ class CctvCrudStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.UpdateCameraNameByUid = channel.unary_unary(
-                '/cctvCrud.CctvCrud/UpdateCameraNameByUid',
-                request_serializer=cctv__crud__pb2.CameraRequest.SerializeToString,
+        self.UpdateCameraByUid = channel.unary_unary(
+                '/cctvCrud.CctvCrud/UpdateCameraByUid',
+                request_serializer=cctv__crud__pb2.CreateCameraRequest.SerializeToString,
                 response_deserializer=cctv__crud__pb2.CameraResponse.FromString,
                 )
         self.GetCameraByUid = channel.unary_unary(
@@ -126,7 +126,7 @@ class CctvCrudServicer(object):
     """The CctvCrud service definition.
     """
 
-    def UpdateCameraNameByUid(self, request, context):
+    def UpdateCameraByUid(self, request, context):
         """crud for table camera
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -260,9 +260,9 @@ class CctvCrudServicer(object):
 
 def add_CctvCrudServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'UpdateCameraNameByUid': grpc.unary_unary_rpc_method_handler(
-                    servicer.UpdateCameraNameByUid,
-                    request_deserializer=cctv__crud__pb2.CameraRequest.FromString,
+            'UpdateCameraByUid': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateCameraByUid,
+                    request_deserializer=cctv__crud__pb2.CreateCameraRequest.FromString,
                     response_serializer=cctv__crud__pb2.CameraResponse.SerializeToString,
             ),
             'GetCameraByUid': grpc.unary_unary_rpc_method_handler(
@@ -377,7 +377,7 @@ class CctvCrud(object):
     """
 
     @staticmethod
-    def UpdateCameraNameByUid(request,
+    def UpdateCameraByUid(request,
             target,
             options=(),
             channel_credentials=None,
@@ -387,8 +387,8 @@ class CctvCrud(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/cctvCrud.CctvCrud/UpdateCameraNameByUid',
-            cctv__crud__pb2.CameraRequest.SerializeToString,
+        return grpc.experimental.unary_unary(request, target, '/cctvCrud.CctvCrud/UpdateCameraByUid',
+            cctv__crud__pb2.CreateCameraRequest.SerializeToString,
             cctv__crud__pb2.CameraResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

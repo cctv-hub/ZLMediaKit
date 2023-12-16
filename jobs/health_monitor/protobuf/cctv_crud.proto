@@ -7,7 +7,7 @@ option go_package = "./pkg/api/cctvCrud";
 // The CctvCrud service definition.
 service CctvCrud {
   // crud for table camera
-  rpc UpdateCameraNameByUid(CameraRequest) returns (CameraResponse );
+  rpc UpdateCameraByUid(CreateCameraRequest) returns (CameraResponse );
   rpc GetCameraByUid(GetCameraByUidRequest) returns ( CameraFullData );
   rpc CreateCamera(CreateCameraRequest) returns (CameraResponse );
   rpc DeleteCameraByUid(CameraRequest) returns (CameraResponse );

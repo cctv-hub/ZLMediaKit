@@ -7,7 +7,7 @@ option go_package = "./pkg/api/cctvCrud";
 // The CctvCrud service definition.
 service CctvCrud {
   // crud for table camera
-  rpc UpdateCameraNameByUid(CameraRequest) returns (CameraResponse );
+  rpc UpdateCameraByUid(CreateCameraRequest) returns (CameraResponse );
   rpc GetCameraByUid(GetCameraByUidRequest) returns ( CameraFullData );
   rpc CreateCamera(CreateCameraRequest) returns (CameraResponse );
   rpc DeleteCameraByUid(CameraRequest) returns (CameraResponse );
@@ -32,6 +32,10 @@ service CctvCrud {
   rpc ListMediaChannelsByAppUid(MediaChannelsRequest) returns ( ListMediaChannelsResponse );
   rpc CreateMediaChannels(MediaChannelsRequest) returns ( MediaChannelsResponse );
   rpc DeleteMediaChannelsByCameraUid(MediaChannelsRequest) returns ( ListMediaChannelsResponse );
+
+  // create and read for table media_channel_health_log
+  rpc ListLatestMediaChannelHealthLog(ListLatestMediaChannelHealthLogRequest) returns ( ListLatestMediaChannelHealthLogResponse );
+  rpc CreateMediaChannelHealthLog(CreateMediaChannelHealthLogRequest) returns ( CreateMediaChannelHealthLogResponse );
 
 }
 //Application
@@ -195,3 +199,24 @@ message ListMediaChannelsResponse {
   bool success=2;
 }
 
+message ListLatestMediaChannelHealthLogRequest {
+  repeated int32 media_channel_ids=1;
+}
+
+message ListLatestMediaChannelHealthLogResponse {
+  repeated CreateMediaChannelHealthLogRequest LatestMediaChannelHealthLog=1;
+}
+
+message CreateMediaChannelHealthLogRequest {
+  google.protobuf.Timestamp created_at=1;
+  int32 media_channel_id=2;
+  bool snapshot_health=3;
+  bool rtsp_out_health=4;
+  bool hls_out_health=5;
+}
+
+message CreateMediaChannelHealthLogResponse {
+  google.protobuf.Timestamp created_at=1;
+  int32 media_channel_id=2;
+  bool success=3;
+}

@@ -230,6 +230,30 @@ class CreateCameraRequest(_message.Message):
     updated_at: _timestamp_pb2.Timestamp
     def __init__(self, camera_uid: _Optional[str] = ..., name: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., is_enabled: bool = ..., camera_info: _Optional[str] = ..., raw_input_url: _Optional[str] = ..., group_id: _Optional[str] = ..., description: _Optional[str] = ..., camera_brand: _Optional[str] = ..., camera_model: _Optional[str] = ..., camera_config_url: _Optional[str] = ..., router_brand: _Optional[str] = ..., router_model: _Optional[str] = ..., router_config_url: _Optional[str] = ..., parameter_intrinsic_matrix: _Optional[_Iterable[float]] = ..., parameter_position: _Optional[_Iterable[float]] = ..., parameter_rotation: _Optional[_Iterable[float]] = ..., parameter_distortion: _Optional[_Iterable[float]] = ...) -> None: ...
 
+class CreateMediaChannelHealthLogRequest(_message.Message):
+    __slots__ = ["created_at", "hls_out_health", "media_channel_id", "rtsp_out_health", "snapshot_health"]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    HLS_OUT_HEALTH_FIELD_NUMBER: _ClassVar[int]
+    MEDIA_CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    RTSP_OUT_HEALTH_FIELD_NUMBER: _ClassVar[int]
+    SNAPSHOT_HEALTH_FIELD_NUMBER: _ClassVar[int]
+    created_at: _timestamp_pb2.Timestamp
+    hls_out_health: bool
+    media_channel_id: int
+    rtsp_out_health: bool
+    snapshot_health: bool
+    def __init__(self, created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., media_channel_id: _Optional[int] = ..., snapshot_health: bool = ..., rtsp_out_health: bool = ..., hls_out_health: bool = ...) -> None: ...
+
+class CreateMediaChannelHealthLogResponse(_message.Message):
+    __slots__ = ["created_at", "media_channel_id", "success"]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    MEDIA_CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    created_at: _timestamp_pb2.Timestamp
+    media_channel_id: int
+    success: bool
+    def __init__(self, created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., media_channel_id: _Optional[int] = ..., success: bool = ...) -> None: ...
+
 class GetAppTypeByIdRequest(_message.Message):
     __slots__ = ["app_type_id"]
     APP_TYPE_ID_FIELD_NUMBER: _ClassVar[int]
@@ -267,6 +291,18 @@ class ListApplicationResponse(_message.Message):
     applications: _containers.RepeatedCompositeFieldContainer[ApplicationFullData]
     success: bool
     def __init__(self, applications: _Optional[_Iterable[_Union[ApplicationFullData, _Mapping]]] = ..., success: bool = ...) -> None: ...
+
+class ListLatestMediaChannelHealthLogRequest(_message.Message):
+    __slots__ = ["media_channel_ids"]
+    MEDIA_CHANNEL_IDS_FIELD_NUMBER: _ClassVar[int]
+    media_channel_ids: _containers.RepeatedScalarFieldContainer[int]
+    def __init__(self, media_channel_ids: _Optional[_Iterable[int]] = ...) -> None: ...
+
+class ListLatestMediaChannelHealthLogResponse(_message.Message):
+    __slots__ = ["LatestMediaChannelHealthLog"]
+    LATESTMEDIACHANNELHEALTHLOG_FIELD_NUMBER: _ClassVar[int]
+    LatestMediaChannelHealthLog: _containers.RepeatedCompositeFieldContainer[CreateMediaChannelHealthLogRequest]
+    def __init__(self, LatestMediaChannelHealthLog: _Optional[_Iterable[_Union[CreateMediaChannelHealthLogRequest, _Mapping]]] = ...) -> None: ...
 
 class ListMediaChannelsByCameraUidRequest(_message.Message):
     __slots__ = ["camera_uid"]
