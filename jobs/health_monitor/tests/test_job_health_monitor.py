@@ -216,7 +216,8 @@ async def test_acheck_cam_health_tasks(mocker):
     no_error = await health_monitor.acheck_cam_health_tasks("12345", "streaming", "boi9mnahgn", 1)
     assert no_error
 
-def test_amain(mocker):
+@pytest.mark.anyio
+async def test_amain(mocker):
     mocker.patch('main.get_cameras', return_value=[
                     {
                         "app_uid": "aiohe",
@@ -234,7 +235,7 @@ def test_amain(mocker):
             )
     mocker.patch('main.resolve_url', return_value="rtmp://ns8.indexforce.com/home/mystream")
     mocker.patch('main.write_health_log', return_value=True)
-    health_monitor.amain(trail_run=1)
+    await health_monitor.amain()
 
 def test_main(mocker):
     mocker.patch('main.get_cameras', return_value=[
@@ -254,4 +255,4 @@ def test_main(mocker):
             )
     mocker.patch('main.resolve_url', return_value="rtmp://ns8.indexforce.com/home/mystream")
     mocker.patch('main.write_health_log', return_value=True)
-    health_monitor.main(trail_run=1)
+    health_monitor.main()

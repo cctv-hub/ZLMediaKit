@@ -150,46 +150,33 @@ def write_health_log(media_channel_id,snapshot_health,rtsp_out_health,hls_out_he
         logger.error(f"Error when calling CreateMediaChannelHealthLog: {e}")
         return False
 
-def main(trail_run=-1):
-    def _func_main():
-        # get cam list from db
-        full_list_of_cameras = get_cameras()
-        for cam in full_list_of_cameras:
-            try:
-                check_cam_health_tasks(cam["host"],cam["app_type"],cam["camera_uid"],cam["media_channel_id"])
-            except Exception as e:
-                logger.error(f"Error when checking health on {cam=}: {e}")
-        # wait for X seconds
-        time.sleep(COOLDOWN_SECOND)
-    if trail_run <= 0:
-        while True:
-            _func_main()
-    else:
-        for _ in range(trail_run):
-            _func_main()
+def main():
+    # get cam list from db
+    full_list_of_cameras = get_cameras()
+    for cam in full_list_of_cameras:
+        try:
+            check_cam_health_tasks(cam["host"],cam["app_type"],cam["camera_uid"],cam["media_channel_id"])
+        except Exception as e:
+            logger.error(f"Error when checking health on {cam=}: {e}")
+    # wait for X seconds
+    time.sleep(COOLDOWN_SECOND)
         
-def amain(trail_run=-1):
-    async def _func_amain():
-            # get cam list from db
-            full_list_of_cameras = get_cameras()
-            tasks = []
-            for cam in full_list_of_cameras:
-                try:
-                    tasks.append(acheck_cam_health_tasks(cam["host"],cam["app_type"],cam["camera_uid"],cam["media_channel_id"]))
-                except Exception as e:
-                    logger.error(f"Error when checking health on {cam=}: {e}")
-            if len(tasks) > 0:
-                await asyncio.run(asyncio.gather(*tasks))
-            # wait for X seconds
-            time.sleep(COOLDOWN_SECOND)
-    if trail_run <= 0:
-        while True:
-            loop = asyncio.get_event_loop()
-            loop.run_until_complete(_func_amain())
-    else:
-        for _ in range(trail_run):
-            loop = asyncio.get_event_loop()
-            loop.run_until_complete(_func_amain())
+async def amain():
+    # get cam list from db
+    full_list_of_cameras = get_cameras()
+    tasks = []
+    for cam in full_list_of_cameras:
+        try:
+            tasks.append(acheck_cam_health_tasks(cam["host"],cam["app_type"],cam["camera_uid"],cam["media_channel_id"]))
+        except Exception as e:
+            logger.error(f"Error when checking health on {cam=}: {e}")
+    if len(tasks) > 0:
+        await asyncio.gather(*tasks)
+    # wait for X seconds
+    time.sleep(COOLDOWN_SECOND)
 
 if __name__ == "__main__":
-    amain()
+    while True:
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(amain())
+        # main()
